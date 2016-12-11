@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <script type="text/javascript" src="javascript/utility.js"></script>
+    <script type="text/javascript" src="javascript/matrix.js"></script>
+    <script type="text/javascript" src="javascript/line.js"></script>
+    <script type="text/javascript" src="javascript/curve.js"></script>
+
+    <style type="text/css">
+        canvas{
+            border-color: #000000;
+            border-style: solid;
+            border-width: 1px;
+        }
+    </style>
+
+    <title>Лабораторная работа №5</title>
+</head>
+
+<body>
+    <p><b>Лабораторная работа №5</b></p>
+
+    <canvas id="canvas" height="400" width="400">
+        <script type="text/javascript">
+            var canvas = document.getElementById("canvas");
+
+            var context = canvas.getContext("2d");
+
+            var sceneAngle = 0.05;
+
+            var sceneAxis = {x: 200, y: 200};
+
+            var scenePoints = [{x: 50, y: 20}, {x: 100, y: 100}, {x: 200, y: 40}, {x: 150, y: 80}];
+
+            function draw()
+            {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+
+                createCurve(context, scenePoints);
+            }
+
+            function rotate(position, angle)
+            {
+                function rotatePoint(point)
+				{
+					var temporaryPoint = new Point(point.x, point.y);
+
+					var matrix_1 = new RotateMatrix(angle);
+
+					var matrix_2 = new MoveMatrix(-position.x, -position.y);
+
+					var matrix_3 = new MoveMatrix(position.x, position.y);
+
+					var matrix_4 = Matrix.multiplication(matrix_3, Matrix.multiplication(matrix_1, matrix_2));
+
+					temporaryPoint.apply(matrix_4);
+
+					point.x = temporaryPoint.x;
+
+					point.y = temporaryPoint.y;
+				}
+
+				for(var i = 0; i < scenePoints.length; ++i)
+                {
+					rotatePoint(scenePoints[i]);
+                }
+            }
+
+            function createMouseEvent()
+            {
+                function eventReset()
+				{
+					canvas.removeEventListener("click", eventReset);
+
+					scenePoints = [];
+
+					context.clearRect(0, 0, canvas.width, canvas.height);
+
+					canvas.addEventListener("click", eventClick);
+				}
+
+                function eventClick()
+				{
+                    if(event.button == 0)
+                    {
+                        sceneAxis.x = event.offsetX;
+
+                        sceneAxis.y = event.offsetY;
+                    }
+				}
+
+				return { onClick: eventClick };
+            }
+
+			setInterval(function(){ rotate(sceneAxis, sceneAngle); draw(); }, 45);
+
+			var mouseEvent = createMouseEvent();
+
+			canvas.addEventListener("click", mouseEvent.onClick);
+        </script>
+    </canvas>
+</body>
+</html>

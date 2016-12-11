@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <script type="text/javascript" src="javascript/circle.js"></script>
+    <script type="text/javascript" src="javascript/line.js"></script>
+
+    <style type="text/css">
+        canvas{
+            border-color: #000000;
+            border-style: solid;
+            border-width: 1px;
+        }
+    </style>
+
+    <title>Лабораторная работа №1</title>
+</head>
+
+<body>
+    <p><b>Лабораторная работа №1</b></p>
+
+    <canvas id="canvas_1" height="400" width="400">
+        <script type="text/javascript">
+            var canvas = document.getElementById("canvas_1");
+
+			function createMouseEvent()
+			{
+				var context = canvas.getContext("2d");
+				
+				var coordinateX = null;
+                
+                var coordinateY = null;
+
+				function eventDown()
+				{
+                    if(event.button == 0)
+                    {
+                        coordinateX = event.offsetX;
+
+                        coordinateY = event.offsetY;
+                    }
+				}
+
+				function eventUp()
+				{
+                    createLine(context, coordinateX, coordinateY, event.offsetX, event.offsetY);
+				}
+
+				return { onDown: eventDown, onUp: eventUp };
+			}
+
+			var mouseEvent = createMouseEvent();
+
+			canvas.addEventListener("mousedown", mouseEvent.onDown);
+
+			canvas.addEventListener("mouseup", mouseEvent.onUp);
+        </script>
+    </canvas>
+
+    <canvas id="canvas_2" height="400" width="400">
+        <script type="text/javascript">
+            var canvas = document.getElementById("canvas_2");
+
+			function createMouseEvent()
+			{
+				var context = canvas.getContext("2d");
+				
+				var coordinateX = null;
+                
+                var coordinateY = null;
+
+				function eventDown()
+				{
+                    if(event.button == 0)
+                    {
+                        coordinateX = event.offsetX;
+
+                        coordinateY = event.offsetY;
+                    }
+				}
+
+                function eventUp()
+                {
+                    var radius = Math.sqrt(Math.pow(event.offsetX - coordinateX, 2) + Math.pow(event.offsetY - coordinateY, 2));
+
+                    createCircle(context, coordinateX, coordinateY, radius);
+                }
+
+				return { onDown: eventDown, onUp: eventUp };
+			}
+
+			mouseEvent = createMouseEvent();
+
+			canvas.addEventListener("mousedown", mouseEvent.onDown);
+
+			canvas.addEventListener("mouseup", mouseEvent.onUp);
+        </script>
+    </canvas>
+</body>
+</html>

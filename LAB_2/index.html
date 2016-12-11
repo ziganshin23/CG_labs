@@ -1,0 +1,230 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <script type="text/javascript" src="javascript/circle.js"></script>
+    <script type="text/javascript" src="javascript/line.js"></script>
+    <script type="text/javascript" src="javascript/polygon.js"></script>
+    <script type="text/javascript" src="javascript/region.js"></script>
+    <script type="text/javascript" src="javascript/utility.js"></script>
+
+    <style type="text/css">
+        canvas{
+            border-color: #000000;
+            border-style: solid;
+            border-width: 1px;
+        }
+    </style>
+
+    <title>Лабораторная работа №2</title>
+</head>
+
+<body>
+    <p><b>Лабораторная работа №2</b></p>
+
+    <canvas id="canvas_1" height="400" width="400">
+        <script type="text/javascript">
+            function initFirstCanvas()
+            {
+                var canvas = document.getElementById("canvas_1");
+
+                var context = canvas.getContext("2d");
+
+                var polygon = [];
+
+                function createMouseEvent()
+                {
+                    var radius = 5;
+
+                    var x_0 = null;
+
+                    var y_0 = null;
+
+                    var x_p = null;
+
+                    var y_p = null;
+
+                    function eventReset()
+                    {
+                        canvas.removeEventListener("click", eventReset);
+
+                        polygon = [];
+
+                        x_0 = null;
+                        
+                        y_0 = null;
+                        
+                        x_p = null;
+                        
+                        y_p = null;
+
+                        context.clearRect(0, 0, canvas.width, canvas.height);
+                        
+                        canvas.addEventListener("click", eventClick);
+                    }
+
+                    function eventClick()
+                    {
+                        if(event.button == 0)
+                        {
+                            if(x_0 === null)
+                            {
+                                x_p = x_0 = event.offsetX;
+
+                                y_p = y_0 = event.offsetY;
+
+                                addPointToPolygon(polygon, x_0, y_0);
+
+                                context.fillStyle = "#0000FF";
+
+                                createCircle(context, x_0, y_0, radius);
+
+                                return;
+                            }
+
+                            x_1 = event.offsetX;
+
+                            y_1 = event.offsetY;
+
+                            if(distance(x_1, y_1, x_0, y_0) < radius)
+                            {
+                                if(polygon.length > 2)
+                                {
+                                    canvas.removeEventListener("click", eventClick);
+
+                                    addPointToPolygon(polygon, x_0, y_0);
+
+                                    context.clearRect(0, 0, canvas.width, canvas.height);
+
+                                    context.fillStyle = "#00FF00";
+
+                                    drawRectangle(context, findFramingRectangle(polygon));
+
+                                    context.fillStyle = "#000000";
+
+                                    drawPolygon(context, polygon);
+
+                                    context.fillStyle = "#FF0000";
+
+                                    fillPolygon(context, polygon);
+
+                                    canvas.addEventListener("click", eventReset);
+                                }
+
+                                return;
+                            }
+
+                            context.fillStyle = "#000000";
+
+                            createLine(context, x_p, y_p, x_1, y_1);
+
+                            x_p = x_1;
+                            
+                            y_p = y_1;
+
+                            addPointToPolygon(polygon, x_p, y_p);
+                        }  
+                    }
+
+                    return { onClick: eventClick };
+                }
+
+                var mouseEvent = createMouseEvent();
+
+                canvas.addEventListener("click", mouseEvent.onClick);
+            }
+
+            initFirstCanvas();
+        </script>
+    </canvas>
+
+    <canvas id="canvas_2" height="400" width="400">
+        <script type="text/javascript">
+            function drawPicture(canvas)
+            {
+                var context = canvas.getContext("2d");
+
+                var width = canvas.width;
+
+                var height = canvas.height;
+
+                var x_n = 9;
+
+                var y_n = 19;
+
+                var dx_1 = Math.round(width / (x_n + 1));
+
+                var dx_2 = Math.round(dx_1 / 2);
+
+                var d_y = Math.round(height / (y_n + 1));
+                
+                for(y = d_y; y < height; y += 2 * d_y)
+                {
+                    for(x = 0; x < width; x += dx_1)
+                    {
+                        createLine(context,x, y - d_y, x + dx_2, y);
+
+                        createLine(context,x, y + d_y, x + dx_2, y);
+                        
+                        createLine(context,x + dx_1, y - d_y, x + dx_2, y);
+
+                        createLine(context,x + dx_1, y + d_y, x + dx_2, y);
+                    }
+                }
+
+                function drawCircleRectangle(context, x, y, width, diameter)
+                {
+                    var radius = width / 2;
+
+                    createCircle(context, x + radius, y + radius, radius);
+                    
+                    var dWidth = width / 2;
+
+                    diameter--;
+
+                    if(diameter == 0)
+                    {
+                        return;
+                    }
+                    
+                    drawCircleRectangle(context, x, y, radius, diameter);
+
+                    drawCircleRectangle(context, x + dWidth, y, radius, diameter);
+
+                    drawCircleRectangle(context, x, y + dWidth, radius, diameter);
+                    
+                    drawCircleRectangle(context, x + dWidth, y + dWidth, radius, diameter);
+                }
+
+                drawCircleRectangle(context, 0, 0, width, 3);
+            }
+
+            function initSecondCanvas()
+            {
+                var canvas = document.getElementById("canvas_2");
+
+                var context = canvas.getContext("2d");
+
+                context.clearRect(0, 0, canvas.width, canvas.height);
+
+                drawPicture(canvas);
+
+                function eventClick()
+                {
+                    if(event.button == 0)
+                    {
+                        context.fillStyle = "#00FF00";
+
+                        fillRegion(context, event.offsetX, event.offsetY, canvas.width, canvas.height);
+                    }
+                }
+
+                canvas.addEventListener("click", eventClick);
+            }
+
+            initSecondCanvas();
+        </script>
+    </canvas>
+</body>
+</html>

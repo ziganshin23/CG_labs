@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <script type="text/javascript" src="javascript/line.js"></script>
+    <script type="text/javascript" src="javascript/rectangle.js"></script>
+    <script type="text/javascript" src="javascript/utility.js"></script>
+
+    <style type="text/css">
+        canvas{
+            border-color: #000000;
+            border-style: solid;
+            border-width: 1px;
+        }
+    </style>
+
+    <title>Лабораторная работа №4</title>
+</head>
+
+<body>
+    <p><b>Лабораторная работа №4</b></p>
+
+    <canvas id="canvas" height="400" width="400">
+        <script type="text/javascript">
+            function createRandomLines(canvas, count)
+            {
+                var context = canvas.getContext("2d");
+
+                var width = canvas.width;
+			    
+                var height = canvas.height;
+
+                var lines = [];
+
+			    for(var i = 0; i < count; ++i)
+                {
+				    lines.push({x_0: randInt(0, width), y_0: randInt(0, height), x_1: randInt(0, width), y_1: randInt(0, height)});
+                }
+
+			    return lines;
+            }
+
+            function drawLines(context, lines)
+            {
+                for(var i = 0; i < lines.length; ++i)
+                {
+                    createLine(context, lines[i].x_0, lines[i].y_0, lines[i].x_1, lines[i].y_1);
+                }
+            }
+
+            var canvas = document.getElementById("canvas");
+
+            var context = canvas.getContext("2d");
+
+            var lines = createRandomLines(canvas, 120);
+
+            drawLines(context, lines);
+
+            var newWidth = 20;
+
+			var newHeight = 20;
+
+            function eventMove()
+            {
+                var x = event.offsetX;
+
+				var y = event.offsetY;
+
+                context.clearRect(0, 0, canvas.width, canvas.height);
+
+                var rectangle = [x - newWidth, y - newHeight, x + newWidth, y + newWidth];
+
+                var newLines = clipRectangle(rectangle, lines);
+
+                context.fillStyle = "#000000";
+
+				drawLines(context, newLines);
+
+				context.fillStyle = "#00FF00";
+
+				drawRectangle(context, rectangle);
+            }
+
+            canvas.addEventListener("mousemove", eventMove);
+        </script>
+    </canvas>
+</body>
+</html>
